@@ -19,6 +19,12 @@ namespace playlaze
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var aboutBox = new AboutBox();
+            aboutBox.Show();
+        }
+
+        private void addButton_Click(object sender, EventArgs e)
+        {
 
         }
     }
