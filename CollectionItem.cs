@@ -21,31 +21,58 @@ namespace playlaze
             _collection = new List<PlaylistItem>();
         }
 
+        internal void InternalReplaceItemRange(int startingIndex, int count, IReadOnlyList<PlaylistItem> newItems)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _collection[startingIndex + i].Parent = null;
+            }
+            _collection.RemoveRange(startingIndex, count);
+            foreach (PlaylistItem item in newItems)
+            {
+                item.Parent = this;
+            }
+            _collection.InsertRange(startingIndex, newItems);
+        }
+
         int ICollection<PlaylistItem>.Count => _collection.Count;
 
         bool ICollection<PlaylistItem>.IsReadOnly => false;
 
-        void ICollection<PlaylistItem>.Add(PlaylistItem item)
+        void ReplaceItemRange(int index, int length, IReadOnlyList<PlaylistItem> newItems)
         {
-            throw new NotImplementedException();
+            var oldItems = _collection.GetRange(index, length).AsReadOnly();
+            var action = new ReplaceItemRangeAction(this, index, oldItems, newItems);
+            InternalDoAction(action);
         }
 
-        void ICollection<PlaylistItem>.Clear()
+        public void AddRange(IEnumerable<PlaylistItem> items)
         {
-            throw new NotImplementedException();
+            var itemlist = new List<PlaylistItem>().AsReadOnly();
+            ReplaceItemRange(_collection.Count, 0, itemlist);
         }
 
-        bool ICollection<PlaylistItem>.Contains(PlaylistItem item)
+        public void Add(PlaylistItem item)
+        {
+            AddRange(new PlaylistItem[] { item });
+        }
+
+        public void Clear()
+        {
+            ReplaceItemRange(0, _collection.Count, new List<PlaylistItem>().AsReadOnly());
+        }
+
+        public bool Contains(PlaylistItem item)
         {
             return _collection.Contains(item);
         }
 
-        void ICollection<PlaylistItem>.CopyTo(PlaylistItem[] array, int arrayIndex)
+        public void CopyTo(PlaylistItem[] array, int arrayIndex)
         {
             _collection.CopyTo(array, arrayIndex);
         }
 
-        IEnumerator<PlaylistItem> IEnumerable<PlaylistItem>.GetEnumerator()
+        public IEnumerator<PlaylistItem> GetEnumerator()
         {
             return _collection.GetEnumerator();
         }

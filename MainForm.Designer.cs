@@ -53,6 +53,19 @@
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
+            // treeView1
+            // 
+            treeView1.AllowDrop = true;
+            treeView1.CheckBoxes = true;
+            treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            treeView1.HideSelection = false;
+            treeView1.HotTracking = true;
+            treeView1.Location = new System.Drawing.Point(0, 53);
+            treeView1.Name = "treeView1";
+            treeView1.ShowRootLines = false;
+            treeView1.Size = new System.Drawing.Size(549, 332);
+            treeView1.TabIndex = 4;
+            // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.AutoSize = true;
@@ -155,14 +168,15 @@
             this.actionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.playAMediaFileToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.actionsToolStripMenuItem.Text = "Actions";
             // 
             // playAMediaFileToolStripMenuItem
             // 
             this.playAMediaFileToolStripMenuItem.Name = "playAMediaFileToolStripMenuItem";
-            this.playAMediaFileToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.playAMediaFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playAMediaFileToolStripMenuItem.Text = "Play a Media File...";
+            this.playAMediaFileToolStripMenuItem.Click += new System.EventHandler(this.playAMediaFileToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -212,19 +226,6 @@
             this.previewButton.TabIndex = 1;
             this.previewButton.Text = "Preview";
             this.previewButton.UseVisualStyleBackColor = true;
-            // 
-            // treeView1
-            // 
-            treeView1.AllowDrop = true;
-            treeView1.CheckBoxes = true;
-            treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            treeView1.HideSelection = false;
-            treeView1.HotTracking = true;
-            treeView1.Location = new System.Drawing.Point(0, 53);
-            treeView1.Name = "treeView1";
-            treeView1.ShowRootLines = false;
-            treeView1.Size = new System.Drawing.Size(549, 332);
-            treeView1.TabIndex = 4;
             // 
             // MainForm
             // 
