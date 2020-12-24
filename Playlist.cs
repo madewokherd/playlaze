@@ -27,5 +27,10 @@ namespace playlaze
             undoHistory.Push(action);
             ActionDone?.Invoke(this, action);
         }
+
+        public override string HumanReadableDescription()
+        {
+            throw new NotSupportedException();
+        }
     }
 }

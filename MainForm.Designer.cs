@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeView treeView1;
+            this.playlistView = new System.Windows.Forms.TreeView();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.addButton = new System.Windows.Forms.Button();
             this.removeButton = new System.Windows.Forms.Button();
@@ -47,24 +47,23 @@
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.playButton = new System.Windows.Forms.Button();
             this.previewButton = new System.Windows.Forms.Button();
-            treeView1 = new System.Windows.Forms.TreeView();
             this.flowLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treeView1
+            // playlistView
             // 
-            treeView1.AllowDrop = true;
-            treeView1.CheckBoxes = true;
-            treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            treeView1.HideSelection = false;
-            treeView1.HotTracking = true;
-            treeView1.Location = new System.Drawing.Point(0, 53);
-            treeView1.Name = "treeView1";
-            treeView1.ShowRootLines = false;
-            treeView1.Size = new System.Drawing.Size(549, 332);
-            treeView1.TabIndex = 4;
+            this.playlistView.AllowDrop = true;
+            this.playlistView.CheckBoxes = true;
+            this.playlistView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.playlistView.HideSelection = false;
+            this.playlistView.HotTracking = true;
+            this.playlistView.Location = new System.Drawing.Point(0, 53);
+            this.playlistView.Name = "playlistView";
+            this.playlistView.ShowRootLines = false;
+            this.playlistView.Size = new System.Drawing.Size(549, 332);
+            this.playlistView.TabIndex = 4;
             // 
             // flowLayoutPanel1
             // 
@@ -232,7 +231,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(549, 414);
-            this.Controls.Add(treeView1);
+            this.Controls.Add(this.playlistView);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
@@ -270,6 +269,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button previewButton;
+        private System.Windows.Forms.TreeView playlistView;
     }
 }
 

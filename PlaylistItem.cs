@@ -25,5 +25,7 @@ namespace playlaze
             else
                 playlist.DoAction(action);
         }
+
+        public abstract string HumanReadableDescription();
     }
 }

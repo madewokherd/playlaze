@@ -18,5 +18,10 @@ namespace playlaze
         {
             PathOrUrl = path_or_url;
         }
+
+        public override string HumanReadableDescription()
+        {
+            return PathOrUrl;
+        }
     }
 }

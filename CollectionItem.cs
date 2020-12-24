@@ -48,7 +48,7 @@ namespace playlaze
 
         public void AddRange(IEnumerable<PlaylistItem> items)
         {
-            var itemlist = new List<PlaylistItem>().AsReadOnly();
+            var itemlist = new List<PlaylistItem>(items).AsReadOnly();
             ReplaceItemRange(_collection.Count, 0, itemlist);
         }
 
@@ -86,5 +86,7 @@ namespace playlaze
         {
             throw new NotImplementedException();
         }
+
+        public PlaylistItem this[int i] => _collection[i];
     }
 }
