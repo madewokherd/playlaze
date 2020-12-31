@@ -25,7 +25,7 @@ namespace playlaze
             NewItems = newItems;
         }
 
-        protected internal override void Do()
+        protected internal sealed override void Do()
         {
             Parent.InternalReplaceItemRange(StartingIndex, OldItems.Count, NewItems);
         }
