@@ -22,10 +22,13 @@ namespace playlaze
                 if (_playlist != null)
                 {
                     Playlist.ActionDone -= Playlist_ActionDone;
+                    Playlist.ActionUndone -= Playlist_ActionUndone;
+                    Playlist.ActionRedone -= Playlist_ActionDone;
                 }
                 _playlist = value;
                 value.ActionDone += Playlist_ActionDone;
                 value.ActionUndone += Playlist_ActionUndone;
+                value.ActionRedone += Playlist_ActionDone;
                 playlistView.BeginUpdate();
                 playlistView.Nodes.Clear();
                 AddNodes(playlistView.Nodes, 0, _playlist);
@@ -188,6 +191,11 @@ namespace playlaze
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Playlist.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Playlist.Redo();
         }
     }
 }
