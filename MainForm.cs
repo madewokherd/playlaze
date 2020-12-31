@@ -25,11 +25,26 @@ namespace playlaze
                 }
                 _playlist = value;
                 value.ActionDone += Playlist_ActionDone;
+                value.ActionUndone += Playlist_ActionUndone;
                 playlistView.BeginUpdate();
                 playlistView.Nodes.Clear();
                 AddNodes(playlistView.Nodes, 0, _playlist);
                 playlistView.EndUpdate();
             }
+        }
+
+        private void Playlist_ActionUndone(object sender, PlaylistAction action)
+        {
+            if (action is ReplaceItemRangeAction)
+            {
+                ReplaceItemRangeAction replace = (ReplaceItemRangeAction)action;
+                playlistView.BeginUpdate();
+                RemoveNodes(replace.Parent, replace.StartingIndex, replace.NewItems.Count);
+                AddNodes(replace.Parent, replace.StartingIndex, replace.OldItems);
+                playlistView.EndUpdate();
+            }
+            else
+                throw new NotImplementedException();
         }
 
         private void AddNodes(TreeNodeCollection nodes, int index, IEnumerable<PlaylistItem> items)
@@ -149,7 +164,7 @@ namespace playlaze
             return parent_node[node.Index];
         }
 
-        private void removeButton_Click(object sender, EventArgs e)
+        private void RemoveSelectedItem()
         {
             var node = playlistView.SelectedNode;
             if (node == null)
@@ -158,6 +173,21 @@ namespace playlaze
             var item = PlaylistItemForNode(node);
 
             item.Parent.RemoveAt(node.Index);
+        }
+
+        private void removeButton_Click(object sender, EventArgs e)
+        {
+            RemoveSelectedItem();
+        }
+
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveSelectedItem();
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Playlist.Undo();
         }
     }
 }

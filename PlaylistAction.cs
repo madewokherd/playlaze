@@ -9,5 +9,6 @@ namespace playlaze
     public abstract class PlaylistAction
     {
         protected internal abstract void Do();
+        protected internal abstract void Undo();
     }
 }

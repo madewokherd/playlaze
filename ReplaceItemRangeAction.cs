@@ -29,5 +29,10 @@ namespace playlaze
         {
             Parent.InternalReplaceItemRange(StartingIndex, OldItems.Count, NewItems);
         }
+
+        protected internal sealed override void Undo()
+        {
+            Parent.InternalReplaceItemRange(StartingIndex, NewItems.Count, OldItems);
+        }
     }
 }
