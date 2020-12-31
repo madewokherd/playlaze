@@ -33,6 +33,7 @@ namespace playlaze
                 playlistView.Nodes.Clear();
                 AddNodes(playlistView.Nodes, 0, _playlist);
                 playlistView.EndUpdate();
+                UpdateUndoSensitivity();
             }
         }
 
@@ -48,6 +49,7 @@ namespace playlaze
             }
             else
                 throw new NotImplementedException();
+            UpdateUndoSensitivity();
         }
 
         private void AddNodes(TreeNodeCollection nodes, int index, IEnumerable<PlaylistItem> items)
@@ -75,6 +77,13 @@ namespace playlaze
             }
             else
                 throw new NotImplementedException();
+            UpdateUndoSensitivity();
+        }
+
+        private void UpdateUndoSensitivity()
+        {
+            undoToolStripMenuItem.Enabled = Playlist.CanUndo;
+            redoToolStripMenuItem.Enabled = Playlist.CanRedo;
         }
 
         private void AddNodes(CollectionItem parent, int index, IEnumerable<PlaylistItem> items)
