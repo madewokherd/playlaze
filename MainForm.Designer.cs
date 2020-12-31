@@ -55,7 +55,6 @@
             // playlistView
             // 
             this.playlistView.AllowDrop = true;
-            this.playlistView.CheckBoxes = true;
             this.playlistView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.playlistView.HideSelection = false;
             this.playlistView.HotTracking = true;
