@@ -87,6 +87,11 @@ namespace playlaze
             throw new NotImplementedException();
         }
 
+        public void RemoveAt(int index)
+        {
+            ReplaceItemRange(index, 1, new PlaylistItem[] { });
+        }
+
         public PlaylistItem this[int i] => _collection[i];
     }
 }

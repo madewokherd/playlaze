@@ -134,5 +134,30 @@ namespace playlaze
             // FIXME: Insert at TreeView selection?
             Playlist.AddRange(items);
         }
+
+        private PlaylistItem PlaylistItemForNode(TreeNode node)
+        {
+            CollectionItem parent_node;
+            if (node.Parent is null)
+            {
+                parent_node = Playlist;
+            }
+            else
+            {
+                parent_node = (CollectionItem)PlaylistItemForNode(node.Parent);
+            }
+            return parent_node[node.Index];
+        }
+
+        private void removeButton_Click(object sender, EventArgs e)
+        {
+            var node = playlistView.SelectedNode;
+            if (node == null)
+                return;
+
+            var item = PlaylistItemForNode(node);
+
+            item.Parent.RemoveAt(node.Index);
+        }
     }
 }
