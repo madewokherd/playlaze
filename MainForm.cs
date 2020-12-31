@@ -129,12 +129,6 @@ namespace playlaze
             var aboutBox = new AboutBox();
             aboutBox.Show();
         }
-
-        private void addButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -205,6 +199,39 @@ namespace playlaze
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Playlist.Redo();
+        }
+
+        private void addButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (addButton.Checked)
+            {
+                if (!addButtonMenu.Visible)
+                    addButtonMenu.Show(addButton, new Point(0, addButton.Height));
+            }
+            else
+            {
+                if (addButtonMenu.Visible)
+                    addButtonMenu.Hide();
+            }
+        }
+
+        private void addButton_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!addButtonMenu.Visible)
+            {
+                addButtonMenu.Show(addButton, new Point(0, addButton.Height));
+                addButtonMenu.Capture = true;
+            }
+        }
+
+        private void addButtonMenu_Opened(object sender, EventArgs e)
+        {
+            addButton.Checked = true;
+        }
+
+        private void addButtonMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            addButton.Checked = false;
         }
     }
 }
