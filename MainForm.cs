@@ -14,6 +14,9 @@ namespace playlaze
     {
         Playlist _playlist;
 
+        // Drag and drop state
+        TreeNode placeholder_node;
+
         public Playlist Playlist
         {
             get => _playlist;
@@ -47,6 +50,14 @@ namespace playlaze
                 AddNodes(replace.Parent, replace.StartingIndex, replace.OldItems);
                 playlistView.EndUpdate();
             }
+            else if (action is MoveItemAction)
+            {
+                MoveItemAction move = (MoveItemAction)action;
+                playlistView.BeginUpdate();
+                RemoveNodes(move.NewParent, move.NewIndex, 1);
+                AddNodes(move.OldParent, move.OldIndex, new PlaylistItem[] { move.Item });
+                playlistView.EndUpdate();
+            }
             else
                 throw new NotImplementedException();
             UpdateUndoSensitivity();
@@ -73,6 +84,14 @@ namespace playlaze
                 playlistView.BeginUpdate();
                 RemoveNodes(replace.Parent, replace.StartingIndex, replace.OldItems.Count);
                 AddNodes(replace.Parent, replace.StartingIndex, replace.NewItems);
+                playlistView.EndUpdate();
+            }
+            else if (action is MoveItemAction)
+            {
+                MoveItemAction move = (MoveItemAction)action;
+                playlistView.BeginUpdate();
+                RemoveNodes(move.OldParent, move.OldIndex, 1);
+                AddNodes(move.NewParent, move.NewIndex, new PlaylistItem[] { move.Item });
                 playlistView.EndUpdate();
             }
             else
@@ -109,13 +128,16 @@ namespace playlaze
             if (parent == _playlist)
                 return playlistView.Nodes;
             var parent_collection = FindNodeCollection(parent.Parent);
-            int index;
-            for (index = 0; index < parent.Parent.Count(); index++)
+            int node_index, item_index = 0;
+            for (node_index = 0; node_index < parent_collection.Count; node_index++)
             {
-                if (parent.Parent[index] == parent)
+                if (parent_collection[node_index] == placeholder_node)
+                    continue;
+                item_index++;
+                if (parent.Parent[item_index] == parent)
                     break;
             }
-            return parent_collection[index].Nodes;
+            return parent_collection[node_index].Nodes;
         }
 
         public MainForm()
@@ -158,16 +180,20 @@ namespace playlaze
 
         private PlaylistItem PlaylistItemForNode(TreeNode node)
         {
-            CollectionItem parent_node;
+            CollectionItem parent_item;
+            if (node == placeholder_node)
+                return null;
             if (node.Parent is null)
             {
-                parent_node = Playlist;
+                parent_item = Playlist;
             }
             else
             {
-                parent_node = (CollectionItem)PlaylistItemForNode(node.Parent);
+                parent_item = (CollectionItem)PlaylistItemForNode(node.Parent);
             }
-            return parent_node[node.Index];
+            if (placeholder_node != null && node.Parent == placeholder_node.Parent && node.Index > placeholder_node.Index)
+                return parent_item[node.Index - 1];
+            return parent_item[node.Index];
         }
 
         private void RemoveSelectedItem()
@@ -232,6 +258,204 @@ namespace playlaze
         private void addButtonMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             addButton.Checked = false;
+        }
+
+        private void playlistView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                DoDragDrop(PlaylistItemForNode((TreeNode)e.Item).GetDataObject(),
+                    DragDropEffects.Move|DragDropEffects.Copy);
+            }
+        }
+
+        private void playlistView_DragEnter(object sender, DragEventArgs e)
+        {
+            var item = (PlaylistItem)e.Data.GetData(typeof(PlaylistItem));
+            if (item != null)
+            {
+                if (item.Root == Playlist && (e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+                    e.Effect = DragDropEffects.Move;
+                else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+                    e.Effect = DragDropEffects.Copy;
+                return;
+            }
+        }
+
+        private bool FindNodeAtPosition(int x, int y, out TreeNode parent_node, out int node_index)
+        {
+            parent_node = null;
+            var parent_nodes = playlistView.Nodes;
+            int min_index = 0;
+            int max_index = parent_nodes.Count - 1;
+            while (min_index <= max_index)
+            {
+                if (min_index == max_index)
+                {
+                    var node = parent_nodes[min_index];
+                    var bounds = node.Bounds;
+                    var item = PlaylistItemForNode(node);
+                    if (item is CollectionItem)
+                    {
+                        if (y < bounds.Y + bounds.Height / 3)
+                        {
+                            // Insert before collection item
+                            node_index = min_index;
+                            return false;
+                        }
+                        if (y < bounds.Y + bounds.Height * 2 / 3)
+                        {
+                            // Insert into collection item
+                            node_index = min_index;
+                            return true;
+                        }
+                        if (node.IsExpanded)
+                        {
+                            // Recurse to find where to insert
+                            parent_node = node;
+                            parent_nodes = node.Nodes;
+                            min_index = 0;
+                            max_index = parent_nodes.Count - 1;
+                            continue;
+                        }
+                        // Insert after collection item
+                        node_index = min_index + 1;
+                        return false;
+                    }
+                    else
+                    {
+                        if (y < bounds.Y + bounds.Height / 2)
+                        {
+                            // Insert before playlist item
+                            node_index = min_index;
+                            return false;
+                        }
+                        node_index = min_index + 1;
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Bias towards checking higher nodes. We don't eliminate a node that
+                    // is too far up, so we need this to prevent an infinite loop.
+                    var mid_index = (min_index + max_index + 1) / 2;
+                    var node = parent_nodes[mid_index];
+                    var bounds = node.Bounds;
+                    if (y < bounds.Y)
+                    {
+                        max_index = mid_index - 1;
+                        continue;
+                    }
+                    if (y > bounds.Y + bounds.Height)
+                    {
+                        // Do not eliminate this node, it may be an expanded node we need
+                        // to recurse into.
+                        min_index = mid_index;
+                        continue;
+                    }
+                    min_index = max_index = mid_index;
+                    continue;
+                }
+            }
+            node_index = min_index;
+            return false;
+        }
+
+        private void playlistView_DragOver(object sender, DragEventArgs e)
+        {
+            TreeNode parent_node;
+            int node_index;
+            var corner = playlistView.PointToScreen(new Point(0, 0));
+            bool collection = FindNodeAtPosition(e.X - corner.X, e.Y - corner.Y, out parent_node, out node_index);
+
+            // FIXME: Check if this is a descendent of the node we're dragging.
+
+            if (collection)
+            {
+                // FIXME: Select this node?
+            }
+            else
+            {
+                AddPlaceholderNode(parent_node, node_index, "[move here]");
+            }
+        }
+
+        private void AddPlaceholderNode(TreeNode parent_node, int node_index, string text)
+        {
+            if (placeholder_node != null &&
+                placeholder_node.Parent == parent_node &&
+                placeholder_node.Index == node_index)
+                // Nothing to do.
+                return;
+            playlistView.BeginUpdate();
+            ClearPlaceholderNode();
+            TreeNodeCollection nodes;
+            if (parent_node == null)
+                nodes = playlistView.Nodes;
+            else
+                nodes = parent_node.Nodes;
+            placeholder_node = nodes.Insert(node_index, text);
+            playlistView.EndUpdate();
+        }
+
+        private void ClearPlaceholderNode()
+        {
+            if (placeholder_node != null)
+            {
+                var parent_node = placeholder_node.Parent;
+                TreeNodeCollection nodes;
+                if (parent_node == null)
+                    nodes = playlistView.Nodes;
+                else
+                    nodes = parent_node.Nodes;
+                nodes.RemoveAt(placeholder_node.Index);
+                placeholder_node = null;
+            }
+        }
+
+        private void playlistView_DragLeave(object sender, EventArgs e)
+        {
+            ClearPlaceholderNode();
+        }
+
+        private void playlistView_DragDrop(object sender, DragEventArgs e)
+        {
+            if (placeholder_node == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+            var parent_node = placeholder_node.Parent;
+            var index = placeholder_node.Index;
+            CollectionItem parent_item;
+            if (parent_node == null)
+                parent_item = Playlist;
+            else
+                parent_item = (CollectionItem)PlaylistItemForNode(parent_node);
+            ClearPlaceholderNode();
+            var item = (PlaylistItem)e.Data.GetData(typeof(PlaylistItem));
+            if (item != null)
+            {
+                if (e.Effect == DragDropEffects.Move)
+                {
+                    int old_index = item.Parent.IndexOf(item);
+                    if (parent_item == item.Parent && index > old_index)
+                    {
+                        // Adjust the "new" index to account for removing this item
+                        // from its old position.
+                        index--;
+                        if (index == old_index)
+                        {
+                            // Nothing to do.
+                            return;
+                        }
+                    }
+                    var action = new MoveItemAction(item, parent_item, index);
+                    Playlist.DoAction(action);
+                }
+                // FIXME: Copy
+                return;
+            }
         }
     }
 }

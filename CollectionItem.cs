@@ -35,6 +35,11 @@ namespace playlaze
             _collection.InsertRange(startingIndex, newItems);
         }
 
+        internal int IndexOf(PlaylistItem item)
+        {
+            return _collection.IndexOf(item);
+        }
+
         int ICollection<PlaylistItem>.Count => _collection.Count;
 
         bool ICollection<PlaylistItem>.IsReadOnly => false;

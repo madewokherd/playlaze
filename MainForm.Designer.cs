@@ -73,6 +73,11 @@
             this.playlistView.ShowRootLines = false;
             this.playlistView.Size = new System.Drawing.Size(549, 332);
             this.playlistView.TabIndex = 4;
+            this.playlistView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.playlistView_ItemDrag);
+            this.playlistView.DragDrop += new System.Windows.Forms.DragEventHandler(this.playlistView_DragDrop);
+            this.playlistView.DragEnter += new System.Windows.Forms.DragEventHandler(this.playlistView_DragEnter);
+            this.playlistView.DragOver += new System.Windows.Forms.DragEventHandler(this.playlistView_DragOver);
+            this.playlistView.DragLeave += new System.EventHandler(this.playlistView_DragLeave);
             // 
             // flowLayoutPanel1
             // 
@@ -280,7 +285,7 @@
             this.addButtonMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.actionsToolStripMenuItem1});
             this.addButtonMenu.Name = "addButtonMenu";
-            this.addButtonMenu.Size = new System.Drawing.Size(181, 48);
+            this.addButtonMenu.Size = new System.Drawing.Size(115, 26);
             this.addButtonMenu.Text = "AddButtonMenu";
             this.addButtonMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.addButtonMenu_Closed);
             this.addButtonMenu.Opened += new System.EventHandler(this.addButtonMenu_Opened);
@@ -290,13 +295,13 @@
             this.actionsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.playAMediaFileToolStripMenuItem1});
             this.actionsToolStripMenuItem1.Name = "actionsToolStripMenuItem1";
-            this.actionsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.actionsToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.actionsToolStripMenuItem1.Text = "Actions";
             // 
             // playAMediaFileToolStripMenuItem1
             // 
             this.playAMediaFileToolStripMenuItem1.Name = "playAMediaFileToolStripMenuItem1";
-            this.playAMediaFileToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.playAMediaFileToolStripMenuItem1.Size = new System.Drawing.Size(171, 22);
             this.playAMediaFileToolStripMenuItem1.Text = "Play a Media File...";
             this.playAMediaFileToolStripMenuItem1.Click += new System.EventHandler(this.playAMediaFileToolStripMenuItem_Click);
             // 

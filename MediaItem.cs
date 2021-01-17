@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Windows.Forms;
 
 namespace playlaze
 {
@@ -22,6 +21,19 @@ namespace playlaze
         public override string HumanReadableDescription()
         {
             return PathOrUrl;
+        }
+
+        public override DataObject GetDataObject()
+        {
+            var result = base.GetDataObject();
+            if (File.Exists(PathOrUrl))
+            {
+                var files = new System.Collections.Specialized.StringCollection();
+                files.Add(PathOrUrl);
+                result.SetFileDropList(files);
+            }
+            result.SetText(PathOrUrl);
+            return result;
         }
     }
 }

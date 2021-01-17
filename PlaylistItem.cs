@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace playlaze
 {
@@ -10,15 +11,20 @@ namespace playlaze
     {
         public CollectionItem Parent { get; internal set; }
 
+        public CollectionItem Root
+        {
+            get
+            {
+                PlaylistItem ancestor = this;
+                while (ancestor.Parent != null)
+                    ancestor = ancestor.Parent;
+                return ancestor as CollectionItem;
+            }
+        }
+
         protected internal void InternalDoAction(PlaylistAction action)
         {
-            PlaylistItem item = this;
-            while (item.Parent != null)
-            {
-                item = item.Parent;
-            }
-
-            Playlist playlist = (item as Playlist);
+            Playlist playlist = Root as Playlist;
 
             if (playlist == null)
                 action.Do();
@@ -27,5 +33,12 @@ namespace playlaze
         }
 
         public abstract string HumanReadableDescription();
+
+        public virtual DataObject GetDataObject()
+        {
+            DataObject result = new DataObject();
+            result.SetData(typeof(PlaylistItem), this);
+            return result;
+        }
     }
 }
