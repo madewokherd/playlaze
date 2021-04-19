@@ -269,17 +269,38 @@ namespace playlaze
             }
         }
 
+        public static PlaylistItem[] ItemsFromDataObject(IDataObject data)
+        {
+            var item = (PlaylistItem)data.GetData(typeof(PlaylistItem));
+            if (item != null)
+                return new PlaylistItem[1] { item };
+            if (data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var hdrop = (string[])data.GetData(DataFormats.FileDrop);
+                PlaylistItem[] result = new PlaylistItem[hdrop.Length];
+                for (int i = 0; i < hdrop.Length; i++)
+                {
+                    result[i] = PlaylistItem.FromFilename(hdrop[i]);
+                }
+                return result;
+            }
+            return new PlaylistItem[0];
+        }
+
         private void playlistView_DragEnter(object sender, DragEventArgs e)
         {
-            var item = (PlaylistItem)e.Data.GetData(typeof(PlaylistItem));
-            if (item != null)
+            var items = ItemsFromDataObject(e.Data);
+            if (items.Length == 1)
             {
+                var item = items[0];
                 if (item.Root == Playlist && (e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
                     e.Effect = DragDropEffects.Move;
                 else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
                     e.Effect = DragDropEffects.Copy;
                 return;
             }
+            if (items.Length != 0)
+                e.Effect = DragDropEffects.Copy;
         }
 
         private bool FindNodeAtPosition(int x, int y, out TreeNode parent_node, out int node_index)
@@ -374,9 +395,13 @@ namespace playlaze
             {
                 // FIXME: Select this node?
             }
-            else
+            else if (e.Effect == DragDropEffects.Move)
             {
                 AddPlaceholderNode(parent_node, node_index, "[move here]");
+            }
+            else
+            {
+                AddPlaceholderNode(parent_node, node_index, "[insert here]");
             }
         }
 
@@ -433,28 +458,30 @@ namespace playlaze
             else
                 parent_item = (CollectionItem)PlaylistItemForNode(parent_node);
             ClearPlaceholderNode();
-            var item = (PlaylistItem)e.Data.GetData(typeof(PlaylistItem));
-            if (item != null)
+            var items = ItemsFromDataObject(e.Data);
+            if (e.Effect == DragDropEffects.Move && items.Length == 1 && items[0].Parent != null)
             {
-                if (e.Effect == DragDropEffects.Move)
+                var item = items[0];
+                int old_index = item.Parent.IndexOf(item);
+                if (parent_item == item.Parent && index > old_index)
                 {
-                    int old_index = item.Parent.IndexOf(item);
-                    if (parent_item == item.Parent && index > old_index)
+                    // Adjust the "new" index to account for removing this item
+                    // from its old position.
+                    index--;
+                    if (index == old_index)
                     {
-                        // Adjust the "new" index to account for removing this item
-                        // from its old position.
-                        index--;
-                        if (index == old_index)
-                        {
-                            // Nothing to do.
-                            return;
-                        }
+                        // Nothing to do.
+                        return;
                     }
-                    var action = new MoveItemAction(item, parent_item, index);
-                    Playlist.DoAction(action);
                 }
-                // FIXME: Copy
+                var action = new MoveItemAction(item, parent_item, index);
+                Playlist.DoAction(action);
+
                 return;
+            }
+            else if (items.Length != 0)
+            {
+                parent_item.InsertRange(index, items);
             }
         }
     }

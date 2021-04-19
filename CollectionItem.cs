@@ -87,6 +87,15 @@ namespace playlaze
             return _collection.GetEnumerator();
         }
 
+        public void InsertRange(int index, IEnumerable<PlaylistItem> items)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+            if (index < 0 || index > _collection.Count)
+                throw new ArgumentOutOfRangeException("index", index, "must be between 0 and length of list inclusive");
+            ReplaceItemRange(index, 0, new List<PlaylistItem>(items));
+        }
+
         bool ICollection<PlaylistItem>.Remove(PlaylistItem item)
         {
             throw new NotImplementedException();

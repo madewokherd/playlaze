@@ -40,5 +40,11 @@ namespace playlaze
             result.SetData(typeof(PlaylistItem), this);
             return result;
         }
+
+        public static PlaylistItem FromFilename(string filename)
+        {
+            // FIXME: Detect other sensible formats
+            return new MediaItem(filename);
+        }
     }
 }
