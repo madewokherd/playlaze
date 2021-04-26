@@ -34,6 +34,8 @@ namespace playlaze
 
         public abstract string HumanReadableDescription();
 
+        public abstract string ToUrlString();
+
         public virtual DataObject GetDataObject()
         {
             DataObject result = new DataObject();

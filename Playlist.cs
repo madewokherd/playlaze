@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace playlaze
 {
@@ -62,6 +60,70 @@ namespace playlaze
         public override string HumanReadableDescription()
         {
             throw new NotSupportedException();
+        }
+
+        public List<string> GetSupportedSaveFormats()
+        {
+            var result = new List<string>();
+
+            result.Add("PLZ");
+
+            return result;
+        }
+
+        public static string[] GetExtensionsForFormat(string format)
+        {
+            switch (format)
+            {
+                case "PLZ":
+                    return new string[] { "plz" };
+                default:
+                    throw new ArgumentException("unknown format id", "format");
+            }
+        }
+
+        public static string GetDescriptionForFormat(string format)
+        {
+            switch (format)
+            {
+                case "PLZ":
+                    return "Playlaze list";
+                default:
+                    throw new ArgumentException("unknown format id", "format");
+            }
+        }
+
+        public void SavePlz(string filename)
+        {
+            // TODO: Store the filename and use it to convert any relative paths
+
+            using (var f = File.Open(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            {
+                using (var s = new StreamWriter(f))
+                {
+                    foreach (var item in this)
+                    {
+                        if (item is CollectionItem)
+                        {
+                            throw new NotImplementedException("Writing collections not implemented");
+                        }
+
+                        s.WriteLine(item.ToUrlString());
+                    }
+                }
+            }
+        }
+
+        public void Save(string filename)
+        {
+            // TODO: Decide the format by checking the extension
+
+            SavePlz(filename);
+        }
+
+        public override string ToUrlString()
+        {
+            throw new NotImplementedException();
         }
     }
 }

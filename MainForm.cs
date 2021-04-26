@@ -484,5 +484,83 @@ namespace playlaze
                 parent_item.InsertRange(index, items);
             }
         }
+
+        private void SaveAs()
+        {
+            var dialog = new SaveFileDialog();
+
+            dialog.AddExtension = true;
+            dialog.AutoUpgradeEnabled = true;
+            dialog.CheckPathExists = true;
+            dialog.Filter = BuildFilter(Playlist.GetSupportedSaveFormats());
+            dialog.FilterIndex = 2;
+            dialog.Title = "Playlaze";
+            dialog.OverwritePrompt = true;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Playlist.Save(dialog.FileName);
+            }
+        }
+
+        private string BuildFilter(List<string> formats)
+        {
+            StringBuilder result = new StringBuilder();
+            bool first_extension = true;
+
+            result.Append("All supported formats|");
+            foreach (string id in formats)
+            {
+                foreach (string extension in Playlist.GetExtensionsForFormat(id))
+                {
+                    if (!first_extension)
+                        result.Append(";");
+                    first_extension = false;
+
+                    result.Append("*.");
+                    result.Append(extension);
+                }
+            }
+
+            foreach (string id in formats)
+            {
+                result.Append("|");
+
+                result.Append(Playlist.GetDescriptionForFormat(id));
+                result.Append(" (");
+
+                first_extension = true;
+                foreach (string extension in Playlist.GetExtensionsForFormat(id))
+                {
+                    if (!first_extension)
+                        result.Append(";");
+                    first_extension = false;
+
+                    result.Append("*.");
+                    result.Append(extension);
+                }
+
+                result.Append(")|");
+
+                first_extension = true;
+                foreach (string extension in Playlist.GetExtensionsForFormat(id))
+                {
+                    if (!first_extension)
+                        result.Append(";");
+                    first_extension = false;
+
+                    result.Append("*.");
+                    result.Append(extension);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAs();
+        }
     }
 }

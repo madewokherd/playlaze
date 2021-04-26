@@ -35,5 +35,11 @@ namespace playlaze
             result.SetText(PathOrUrl);
             return result;
         }
+
+        public override string ToUrlString()
+        {
+            var uri = new Uri(PathOrUrl);
+            return uri.ToString();
+        }
     }
 }
