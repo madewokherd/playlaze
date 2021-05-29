@@ -601,5 +601,10 @@ namespace playlaze
         {
             Open();
         }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetNewWindow();
+        }
     }
 }
