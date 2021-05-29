@@ -42,6 +42,8 @@ namespace playlaze
 
         int ICollection<PlaylistItem>.Count => _collection.Count;
 
+        public int Count => _collection.Count;
+
         bool ICollection<PlaylistItem>.IsReadOnly => false;
 
         void ReplaceItemRange(int index, int length, IReadOnlyList<PlaylistItem> newItems)

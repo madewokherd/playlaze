@@ -562,5 +562,44 @@ namespace playlaze
         {
             SaveAs();
         }
+
+        private MainForm GetNewWindow()
+        {
+            if (Playlist.CanRedo || Playlist.CanUndo || Playlist.Count != 0)
+            {
+                var result = new MainForm();
+                result.Show();
+                return result;
+            }
+            return this;
+        }
+
+        private void Open()
+        {
+            var dialog = new OpenFileDialog();
+
+            dialog.AutoUpgradeEnabled = true;
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
+            dialog.Filter = BuildFilter(Playlist.GetSupportedSaveFormats());
+            dialog.FilterIndex = 1;
+            dialog.Title = "Playlaze";
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                GetNewWindow().Open(dialog.FileName);
+            }
+        }
+
+        private void Open(string filename)
+        {
+            Playlist = Playlist.Open(filename);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Open();
+        }
     }
 }

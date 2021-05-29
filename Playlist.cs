@@ -121,6 +121,29 @@ namespace playlaze
             SavePlz(filename);
         }
 
+        public static Playlist Open(string filename)
+        {
+            using (var f = File.Open(filename, FileMode.Open, FileAccess.Read))
+            {
+                // assume PLZ format
+                using (var s = new StreamReader(f))
+                {
+                    var items = new List<PlaylistItem>();
+                    string line;
+                    while ((line = s.ReadLine()) != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+
+                        var item = PlaylistItem.FromUrlString(line);
+                        items.Add(item);
+                    }
+
+                    return new Playlist(items);
+                }
+            }
+        }
+
         public override string ToUrlString()
         {
             throw new NotImplementedException();

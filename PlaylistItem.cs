@@ -48,5 +48,10 @@ namespace playlaze
             // FIXME: Detect other sensible formats
             return new MediaItem(filename);
         }
+
+        protected static PlaylistItem FromUrlString(string url)
+        {
+            return FromFilename(url);
+        }
     }
 }
