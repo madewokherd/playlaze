@@ -9,7 +9,19 @@ namespace playlaze
 {
     public abstract class PlaylistItem
     {
-        public CollectionItem Parent { get; internal set; }
+        private CollectionItem _parent;
+
+        public CollectionItem Parent {
+            get => _parent;
+            internal set
+            {
+                if (value != null && _parent != null && value != _parent)
+                {
+                    throw new InvalidOperationException("PlaylistItem already has a parent");
+                }
+                _parent = value;
+            }
+        }
 
         public CollectionItem Root
         {
