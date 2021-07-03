@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace playlaze
@@ -37,6 +35,7 @@ namespace playlaze
                 AddNodes(playlistView.Nodes, 0, _playlist);
                 playlistView.EndUpdate();
                 UpdateUndoSensitivity();
+                UpdateTitle();
             }
         }
 
@@ -500,7 +499,18 @@ namespace playlaze
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
-                Playlist.Save(dialog.FileName);
+                Playlist.SaveAs(dialog.FileName);
+                UpdateTitle();
+            }
+        }
+
+        private void UpdateTitle()
+        {
+            if (Playlist.FileName != null)
+            {
+                Text = String.Format("Playlaze - {0} ({1})",
+                    Path.GetFileName(Playlist.FileName),
+                    Path.GetDirectoryName(Playlist.FileName));
             }
         }
 
@@ -605,6 +615,12 @@ namespace playlaze
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GetNewWindow();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Playlist.Save())
+                SaveAs();
         }
     }
 }

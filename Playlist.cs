@@ -93,7 +93,7 @@ namespace playlaze
             }
         }
 
-        public void SavePlz(string filename)
+        public void WritePlz(string filename)
         {
             // TODO: Store the filename and use it to convert any relative paths
 
@@ -114,11 +114,28 @@ namespace playlaze
             }
         }
 
-        public void Save(string filename)
+        public void WriteFile(string filename)
         {
-            // TODO: Decide the format by checking the extension
+                // TODO: Decide the format by checking the extension
 
-            SavePlz(filename);
+            WritePlz(filename);
+        }
+
+        public string FileName { get; private set; }
+
+        public void SaveAs(string filename)
+        {
+            WriteFile(filename);
+
+            this.FileName = filename;
+        }
+
+        public bool Save()
+        {
+            if (FileName == null)
+                return false;
+            WriteFile(FileName);
+            return true;
         }
 
         public static Playlist Open(string filename)
@@ -139,7 +156,9 @@ namespace playlaze
                         items.Add(item);
                     }
 
-                    return new Playlist(items);
+                    var result = new Playlist(items);
+                    result.FileName = filename;
+                    return result;
                 }
             }
         }
